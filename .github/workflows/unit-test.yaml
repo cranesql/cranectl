@@ -1,8 +1,6 @@
 name: Unit Test
 on:
   workflow_call:
-  push:
-    branches: [main]
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}-unit-test
   cancel-in-progress: true
