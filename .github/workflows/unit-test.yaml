@@ -1,0 +1,43 @@
+name: Unit Test
+on:
+  workflow_call:
+  push:
+    branches: [main]
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-unit-test
+  cancel-in-progress: true
+jobs:
+  linux-build:
+    name: Linux (${{ matrix.swift_version }} - ${{ matrix.os_version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        swift_version: ["6.3", "nightly-main"]
+        os_version: ["jammy"]
+    container:
+      image: ${{ (contains(matrix.swift_version, 'nightly') && 'swiftlang/swift') || 'swift' }}:${{ matrix.swift_version }}-${{ matrix.os_version }}
+    steps:
+      - name: Swift version
+        run: swift --version
+      - name: Clang version
+        run: clang --version
+      - name: Checkout repository
+        uses: actions/checkout@v6
+      - name: Build / Test
+        run: swift test --parallel --xunit-output junit.xml
+      - name: Install curl
+        run: |
+          if ! command -v curl > /dev/null; then
+            apt-get update
+            apt-get install -y curl
+          fi
+      - name: Upload test results to Codecov
+        if: ${{ !cancelled() }}
+        uses: codecov/codecov-action@v6.0.0
+        with:
+          report_type: test_results
+          files: ./junit.xml,./junit-swift-testing.xml
+          disable_search: true
+          fail_ci_if_error: true
+          token: ${{ secrets.CODECOV_TOKEN }}

@@ -1,0 +1,13 @@
+.DS_Store
+.build/
+.swiftpm/
+xcuserdata/
+*.xcodeproj/*
+!*.xcodeproj/project.pbxproj
+!*.xcodeproj/xcshareddata/
+!*.xcworkspace/contents.xcworkspacedata
+/*.gcno
+**/xcshareddata/WorkspaceSettings.xcsettings
+.vscode/
+/junit-swift-testing.xml
+/junit.xml
