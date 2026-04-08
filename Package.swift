@@ -8,6 +8,12 @@ let sharedSwiftSettings: [SwiftSetting] = [
 
 let package = Package(
     name: "cranectl",
+    platforms: [
+        .iOS(.v16),
+        .macOS(.v13),
+        .watchOS(.v9),
+        .tvOS(.v16),
+    ],
     products: [
         .executable(name: "crane", targets: ["CraneCTL"]),
         .library(name: "CraneCommands", targets: ["CraneCommands"]),

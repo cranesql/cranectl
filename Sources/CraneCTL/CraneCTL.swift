@@ -15,7 +15,6 @@ import ArgumentParser
 import CraneCommands
 
 @main
-@available(macOS 10.15, macCatalyst 13, iOS 13, tvOS 13, watchOS 6, *)
 struct CraneCTL: AsyncParsableCommand {
     static let configuration = CommandConfiguration(
         commandName: "crane",
