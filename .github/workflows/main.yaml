@@ -25,10 +25,10 @@ jobs:
         variant:
           - name: default
             dockerfile: Dockerfile
-            image: ghcr.io/${{ github.repository }}
+            tag_suffix: ""
           - name: postgres-nio
             dockerfile: Dockerfile.postgres-nio
-            image: ghcr.io/${{ github.repository }}/postgres-nio
+            tag_suffix: -postgres-nio
         arch:
           - name: amd64
             runner: ubuntu-latest
@@ -54,7 +54,7 @@ jobs:
           context: .
           file: ${{ matrix.variant.dockerfile }}
           push: true
-          tags: ${{ matrix.variant.image }}:sha-${{ github.sha }}-${{ matrix.arch.name }}
+          tags: ghcr.io/${{ github.repository }}:sha-${{ github.sha }}${{ matrix.variant.tag_suffix }}-${{ matrix.arch.name }}
           cache-from: type=gha,scope=${{ matrix.variant.name }}-${{ matrix.arch.name }}
           cache-to: type=gha,mode=max,scope=${{ matrix.variant.name }}-${{ matrix.arch.name }}
 
@@ -69,9 +69,9 @@ jobs:
       matrix:
         include:
           - variant: default
-            image: ghcr.io/${{ github.repository }}
+            tag_suffix: ""
           - variant: postgres-nio
-            image: ghcr.io/${{ github.repository }}/postgres-nio
+            tag_suffix: -postgres-nio
     steps:
       - name: Log in to GHCR
         uses: docker/login-action@v3
@@ -84,17 +84,17 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ matrix.image }}
+          images: ghcr.io/${{ github.repository }}
           tags: |
-            type=sha
-            type=raw,value=latest
+            type=sha,suffix=${{ matrix.tag_suffix }}
+            type=raw,value=latest${{ matrix.tag_suffix }}
 
       - name: Create and push multi-arch manifest
         run: |
           echo "$TAGS" | while read -r TAG; do
             docker buildx imagetools create -t "$TAG" \
-              "${{ matrix.image }}:sha-${{ github.sha }}-amd64" \
-              "${{ matrix.image }}:sha-${{ github.sha }}-arm64"
+              "ghcr.io/${{ github.repository }}:sha-${{ github.sha }}${{ matrix.tag_suffix }}-amd64" \
+              "ghcr.io/${{ github.repository }}:sha-${{ github.sha }}${{ matrix.tag_suffix }}-arm64"
           done
         env:
           TAGS: ${{ steps.meta.outputs.tags }}
