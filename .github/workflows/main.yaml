@@ -24,10 +24,8 @@ jobs:
       matrix:
         variant:
           - name: default
-            dockerfile: Dockerfile
             tag_suffix: ""
           - name: postgres-nio
-            dockerfile: Dockerfile.postgres-nio
             tag_suffix: -postgres-nio
         arch:
           - name: amd64
@@ -45,6 +43,9 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Generate Dockerfile
+        run: make Dockerfile.${{ matrix.variant.name }}
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -52,7 +53,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: ${{ matrix.variant.dockerfile }}
+          file: Dockerfile.${{ matrix.variant.name }}
           push: true
           tags: ghcr.io/${{ github.repository }}:sha-${{ github.sha }}${{ matrix.variant.tag_suffix }}-${{ matrix.arch.name }}
           cache-from: type=gha,scope=${{ matrix.variant.name }}-${{ matrix.arch.name }}
@@ -73,6 +74,16 @@ jobs:
           - variant: postgres-nio
             tag_suffix: -postgres-nio
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Generate Dockerfile
+        run: make Dockerfile.${{ matrix.variant }}
+
+      - name: Extract description
+        id: description
+        run: echo "value=$(grep 'org.opencontainers.image.description=' Dockerfile.${{ matrix.variant }} | sed 's/.*description="\(.*\)"/\1/')" >> "$GITHUB_OUTPUT"
+
       - name: Log in to GHCR
         uses: docker/login-action@v3
         with:
@@ -93,6 +104,7 @@ jobs:
         run: |
           echo "$TAGS" | while read -r TAG; do
             docker buildx imagetools create -t "$TAG" \
+              --annotation "index:org.opencontainers.image.description=${{ steps.description.outputs.value }}" \
               "ghcr.io/${{ github.repository }}:sha-${{ github.sha }}${{ matrix.tag_suffix }}-amd64" \
               "ghcr.io/${{ github.repository }}:sha-${{ github.sha }}${{ matrix.tag_suffix }}-arm64"
           done

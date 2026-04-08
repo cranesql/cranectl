@@ -39,5 +39,9 @@ ENV SWIFT_BACKTRACE=enable=yes,sanitize=yes,threads=all,images=all,interactive=n
 
 USER crane:crane
 
+LABEL org.opencontainers.image.source="https://github.com/cranesql/cranectl"
+LABEL org.opencontainers.image.description="A CLI for Crane, the lightweight migration tool for SQL databases."
+LABEL org.opencontainers.image.licenses="Apache-2.0"
+
 ENTRYPOINT [ "./crane" ]
 CMD [ "--help" ]

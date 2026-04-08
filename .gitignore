@@ -1,4 +1,6 @@
 .DS_Store
+Dockerfile.*
+!Dockerfile.template
 .build/
 .swiftpm/
 xcuserdata/
