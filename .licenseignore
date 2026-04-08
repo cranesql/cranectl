@@ -6,3 +6,7 @@
 *.yml
 *.yaml
 Package.swift
+Package.resolved
+.dockerignore
+Dockerfile
+Dockerfile.*
