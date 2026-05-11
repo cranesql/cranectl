@@ -11,13 +11,37 @@
 //
 //===----------------------------------------------------------------------===//
 
-import CraneCommands
+import ArgumentParser
+import Configuration
 import Testing
 
-@Suite struct Migrate {
-    @Test func Executes() async throws {
-        let command = CraneMigrate()
+@testable import CraneCommands
 
-        try await command.run()
+@Suite struct Migrate {
+    @Suite struct `Config Reader` {
+        @Test func `Reads CLI flags directly into the reader's flat namespace`() async throws {
+            // The libraries read keys flat (`paths`, `postgres.host`), so `--paths` and
+            // `--postgres-host` map to the queries they actually issue.
+            let command = try CraneMigrate.parse(["--paths", "db", "shared", "--postgres-host", "10.0.0.1"])
+            let reader = try await command.makeConfigReader()
+
+            #expect(reader.stringArray(forKey: "paths", default: []) == ["db", "shared"])
+            #expect(reader.string(forKey: "postgres.host", default: "") == "10.0.0.1")
+        }
+
+        @Test func `Returns the supplied default when nothing is configured`() async throws {
+            let command = try CraneMigrate.parse([])
+            let reader = try await command.makeConfigReader()
+
+            #expect(reader.stringArray(forKey: "paths", default: ["fallback"]) == ["fallback"])
+        }
+
+        @Test func `Rejects --config with an unsupported file extension`() async throws {
+            let command = try CraneMigrate.parse(["--config", "settings.toml"])
+
+            await #expect(throws: ValidationError.self) {
+                _ = try await command.makeConfigReader()
+            }
+        }
     }
 }
