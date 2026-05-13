@@ -14,7 +14,7 @@
 public import ArgumentParser
 package import Configuration
 import Crane
-import Logging
+package import Logging
 import SystemPackage
 
 #if PostgresNIO
@@ -54,30 +54,37 @@ public struct CraneMigrate: AsyncParsableCommand {
 
     public func run() async throws {
         loggingArguments.bootstrapLoggingSystem()
-
-        let reader = try await makeConfigReader()
+        let logger = Logger(label: "crane")
 
         #if PostgresNIO
-        let target = try PostgresMigrationTarget(reader: reader.scoped(to: "postgres"))
-        let migrator = try Migrator(reader: reader, target: target)
+        // Wrap the migration pipeline so the eventual exit is just a non-zero code. The library
+        // (crane and crane-postgres-nio) emits structured error logs before throwing, so we don't
+        // need ArgumentParser to also auto-print the raw error description.
+        do {
+            let reader = try await makeConfigReader(logger: logger)
+            let target = try PostgresMigrationTarget(reader: reader.scoped(to: "postgres"))
+            let migrator = try Migrator(reader: reader, target: target)
 
-        try await withThrowingTaskGroup(of: Void.self) { group in
-            group.addTask { await target.run() }
-            do {
-                try await migrator.apply()
-            } catch {
+            try await withThrowingTaskGroup(of: Void.self) { group in
+                group.addTask { await target.run() }
+                do {
+                    try await migrator.apply()
+                } catch {
+                    group.cancelAll()
+                    throw error
+                }
                 group.cancelAll()
-                throw error
             }
-            group.cancelAll()
+        } catch {
+            throw ExitCode.failure
         }
         #else
-        throw ValidationError("cranectl was built without any migration target. Enable the PostgresNIO trait.")
+        logger.critical("crane was built without any migration target. Enable at least one of the traits.")
+        throw ExitCode.failure
         #endif
     }
 
-    package func makeConfigReader() async throws -> ConfigReader {
-        let logger = Logger(label: "crane")
+    package func makeConfigReader(logger: Logger) async throws -> ConfigReader {
         var providers: [any ConfigProvider] = []
 
         // CLI flags map directly to config keys: `paths` → `--paths`, `postgres.host` → `--postgres-host`.
