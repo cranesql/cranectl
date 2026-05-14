@@ -54,7 +54,7 @@ public struct CraneMigrate: AsyncParsableCommand {
 
     public func run() async throws {
         loggingArguments.bootstrapLoggingSystem()
-        let logger = Logger(label: "crane")
+        let logger = Logger(label: "cranectl")
 
         #if PostgresNIO
         // Wrap the migration pipeline so the eventual exit is just a non-zero code. The library
@@ -79,7 +79,7 @@ public struct CraneMigrate: AsyncParsableCommand {
             throw ExitCode.failure
         }
         #else
-        logger.critical("crane was built without any migration target. Enable at least one of the traits.")
+        logger.critical("cranectl was built without any migration target. Enable at least one of the traits.")
         throw ExitCode.failure
         #endif
     }
@@ -91,7 +91,7 @@ public struct CraneMigrate: AsyncParsableCommand {
         // The provider sees the args ArgumentParser captured into `passthrough`,
         // prefixed with a placeholder program name so the provider's parser can do its own
         // argv[0]-skipping.
-        let cliArguments = ["crane"] + passthrough
+        let cliArguments = ["cranectl"] + passthrough
         providers.append(CommandLineArgumentsProvider(arguments: cliArguments))
 
         // Env vars retain the `CRANE_*` prefix (global namespace hygiene), so a reader query for

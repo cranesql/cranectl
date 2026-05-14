@@ -17,7 +17,7 @@ import CraneCommands
 @main
 struct CraneCTL: AsyncParsableCommand {
     static let configuration = CommandConfiguration(
-        commandName: "crane",
+        commandName: "cranectl",
         abstract: "A CLI for Crane, the lightweight migration tool for SQL databases.",
         subcommands: [CraneMigrate.self]
     )
