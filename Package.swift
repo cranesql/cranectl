@@ -15,7 +15,7 @@ let package = Package(
         .tvOS(.v18),
     ],
     products: [
-        .executable(name: "crane", targets: ["CraneCTL"]),
+        .executable(name: "cranectl", targets: ["CraneCTL"]),
         .library(name: "CraneCommands", targets: ["CraneCommands"]),
     ],
     traits: [
