@@ -1,5 +1,5 @@
 {
-  "originHash" : "6b4aabac8516206584e1f466e78158cc584a693b38881d2b9c099dbfdba5845f",
+  "originHash" : "b0af7656f5de3fc59ffb3a249f5009e34c9e9a7f66f594e4f299c7d4876b9ae9",
   "pins" : [
     {
       "identity" : "crane",
@@ -7,7 +7,7 @@
       "location" : "https://github.com/cranesql/crane.git",
       "state" : {
         "branch" : "main",
-        "revision" : "e12844c862e089cc84674f64ba8fa88a6a70feab"
+        "revision" : "99d9098a196886eecd758f052a8c57c1d81d080d"
       }
     },
     {
@@ -16,7 +16,7 @@
       "location" : "https://github.com/cranesql/crane-postgres-nio.git",
       "state" : {
         "branch" : "main",
-        "revision" : "dddde26999beb6ec7476456cee6d672a85ac0932"
+        "revision" : "0fc8c186492b7b03950f6c45c071b3616a55dd7d"
       }
     },
     {
@@ -69,8 +69,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-collections",
       "state" : {
-        "revision" : "03cc312c2c933ed87abace34044a5dff7a3117c1",
-        "version" : "1.5.0"
+        "revision" : "fea17c02d767f46b23070fdfdacc28a03a39232a",
+        "version" : "1.5.1"
       }
     },
     {
