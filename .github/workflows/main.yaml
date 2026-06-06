@@ -49,6 +49,12 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
 
+      # Match docker/metadata-action's default `type=sha` format (7-char short sha) so the
+      # baked-in version aligns with the public-facing per-commit image tag.
+      - name: Compute version
+        id: version
+        run: echo "value=sha-${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
+
       - name: Build and push
         uses: docker/build-push-action@v7
         with:
@@ -57,7 +63,7 @@ jobs:
           push: true
           tags: ghcr.io/${{ github.repository }}:sha-${{ github.sha }}${{ matrix.variant.tag_suffix }}-${{ matrix.arch.name }}
           build-args: |
-            CRANECTL_VERSION=sha-${{ github.sha }}
+            CRANECTL_VERSION=${{ steps.version.outputs.value }}
           cache-from: type=gha,scope=${{ matrix.variant.name }}-${{ matrix.arch.name }}
           cache-to: type=gha,mode=max,scope=${{ matrix.variant.name }}-${{ matrix.arch.name }}
 
