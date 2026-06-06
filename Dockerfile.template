@@ -13,6 +13,11 @@ RUN swift package resolve
 
 COPY . .
 
+ARG CRANECTL_VERSION
+RUN test -n "$CRANECTL_VERSION" \
+    && sed -i 's|cranectlVersion: String? = nil|cranectlVersion: String? = "'"$CRANECTL_VERSION"'"|' \
+    Sources/CraneCTL/Version.swift
+
 RUN swift build -c release --product cranectl --static-swift-stdlib -Xlinker -ljemalloc
 
 WORKDIR /staging
