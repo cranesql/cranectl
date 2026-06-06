@@ -16,7 +16,7 @@ import Configuration
 import Logging
 import Testing
 
-@testable import CraneCommands
+@testable import CraneCTL
 
 @Suite struct Migrate {
     @Suite struct `Config Reader` {

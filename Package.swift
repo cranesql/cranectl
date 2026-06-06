@@ -15,8 +15,7 @@ let package = Package(
         .tvOS(.v18),
     ],
     products: [
-        .executable(name: "cranectl", targets: ["CraneCTL"]),
-        .library(name: "CraneCommands", targets: ["CraneCommands"]),
+        .executable(name: "cranectl", targets: ["CraneCTL"])
     ],
     traits: [
         .trait(name: "PostgresNIO", description: "Adds support for using the Crane Postgres NIO target."),
@@ -46,15 +45,6 @@ let package = Package(
             name: "CraneCTL",
             dependencies: [
                 .product(name: "ArgumentParser", package: "swift-argument-parser"),
-                .product(name: "Logging", package: "swift-log"),
-                .target(name: "CraneCommands"),
-            ],
-            swiftSettings: sharedSwiftSettings
-        ),
-        .target(
-            name: "CraneCommands",
-            dependencies: [
-                .product(name: "ArgumentParser", package: "swift-argument-parser"),
                 .product(name: "Configuration", package: "swift-configuration"),
                 .product(name: "Yams", package: "Yams"),
                 .product(name: "Logging", package: "swift-log"),
@@ -68,9 +58,9 @@ let package = Package(
             swiftSettings: sharedSwiftSettings
         ),
         .testTarget(
-            name: "CraneCommandsTests",
+            name: "CraneCTLTests",
             dependencies: [
-                .target(name: "CraneCommands")
+                .target(name: "CraneCTL")
             ],
             swiftSettings: sharedSwiftSettings
         ),

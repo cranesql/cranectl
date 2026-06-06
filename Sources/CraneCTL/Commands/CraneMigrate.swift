@@ -11,18 +11,18 @@
 //
 //===----------------------------------------------------------------------===//
 
-public import ArgumentParser
-package import Configuration
+import ArgumentParser
+import Configuration
 import Crane
-package import Logging
+import Logging
 import SystemPackage
 
 #if PostgresNIO
 import CranePostgresNIO
 #endif
 
-public struct CraneMigrate: AsyncParsableCommand {
-    public static let configuration = CommandConfiguration(
+struct CraneMigrate: AsyncParsableCommand {
+    static let configuration = CommandConfiguration(
         commandName: "migrate",
         abstract: "Apply pending database migrations."
     )
@@ -50,9 +50,7 @@ public struct CraneMigrate: AsyncParsableCommand {
         )
     ) var passthrough: [String] = []
 
-    public init() {}
-
-    public func run() async throws {
+    func run() async throws {
         loggingArguments.bootstrapLoggingSystem()
         let logger = Logger(label: "cranectl")
 
@@ -84,7 +82,7 @@ public struct CraneMigrate: AsyncParsableCommand {
         #endif
     }
 
-    package func makeConfigReader(logger: Logger) async throws -> ConfigReader {
+    func makeConfigReader(logger: Logger) async throws -> ConfigReader {
         var providers: [any ConfigProvider] = []
 
         // CLI flags map directly to config keys: `paths` → `--paths`, `postgres.host` → `--postgres-host`.

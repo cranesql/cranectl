@@ -1,6 +1,7 @@
 .PHONY: docker-build docker-build-postgres-nio
 
 DOCKER_IMAGE ?= cranectl
+CRANECTL_VERSION ?= $(shell git describe --tags --always --dirty 2>/dev/null)
 
 define append-description
 sed 's/org.opencontainers.image.description="\(.*\)"/org.opencontainers.image.description="\1 $(1)"/'
@@ -16,7 +17,7 @@ Dockerfile.postgres-nio: Dockerfile.template
 		| $(call append-description,$(DESCRIPTION)) > Dockerfile.postgres-nio
 
 docker-build: Dockerfile.default
-	docker build -f Dockerfile.default -t $(DOCKER_IMAGE):latest .
+	docker build -f Dockerfile.default --build-arg CRANECTL_VERSION=$(CRANECTL_VERSION) -t $(DOCKER_IMAGE):latest .
 
 docker-build-postgres-nio: Dockerfile.postgres-nio
-	docker build -f Dockerfile.postgres-nio -t $(DOCKER_IMAGE):latest-postgres-nio .
+	docker build -f Dockerfile.postgres-nio --build-arg CRANECTL_VERSION=$(CRANECTL_VERSION) -t $(DOCKER_IMAGE):latest-postgres-nio .
