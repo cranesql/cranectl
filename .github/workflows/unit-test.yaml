@@ -37,7 +37,7 @@ jobs:
           fi
       - name: Upload test results to Codecov
         if: ${{ !cancelled() }}
-        uses: codecov/codecov-action@v6.0.0
+        uses: codecov/codecov-action@v6.0.1
         with:
           report_type: test_results
           files: ./junit.xml,./junit-swift-testing.xml
